@@ -48,12 +48,13 @@ def main():
             execfile("APIGrabber.py")
 
     APIKey = (str) ('7ac4f906-c21a-476f-a50a-b0862026dcb8')
-
-    responseJSON  = requestSummonerData(region, summonerName, APIKey)
+    global responseJSON
+    responseJSON = requestSummonerData(region, summonerName, APIKey)
     
     if responseJSON is None:
         print 'This summoner does not Exist'
         sys.exit()
+        execfile("TiltChecker.py")
     else:
         ID = (str) (responseJSON[summonerName]['id'])
         responseJSON2 = requestCurrentMatch(region, ID, APIKey)
