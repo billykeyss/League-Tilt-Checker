@@ -16,7 +16,7 @@ def requestRankedData(region, ID, APIKey):
         return response.json()
     else:
         return None
-    
+
 def requestRecentMatches(region, ID, APIKey):
     URL = "https://" + region + ".api.pvp.net/api/lol/na/v1.3/game/by-summoner/" + ID + "/recent?api_key=" + APIKey
     response = requests.get(URL)
@@ -50,7 +50,7 @@ def main():
     APIKey = (str) ('7ac4f906-c21a-476f-a50a-b0862026dcb8')
 
     responseJSON  = requestSummonerData(region, summonerName, APIKey)
-    
+
     if responseJSON is None:
         print 'This summoner does not Exist'
         sys.exit()
@@ -76,7 +76,7 @@ def main():
     for i in range(0, 5):
         DamageToChamps = (str) (responseJSON3['games'][i]['stats']['totalDamageDealtToChampions'])
         GameResult = (responseJSON3['games'][i]['stats']['win'])
-        
+
         if GameResult:
             GameResult = 'Win'
         else:
@@ -84,17 +84,17 @@ def main():
 
 
         if 'championsKilled' in responseJSON3['games'][i]['stats']:
-            kills = (str) (responseJSON3['games'][j]['stats']['championsKilled'])
+            kills = (str) (responseJSON3['games'][i]['stats']['championsKilled'])
         else:
             kills = (str(0));
 
-        if 'numDeaths' in responseJSON3['games'][j]['stats']:
-            deaths = (str) (responseJSON3['games'][j]['stats']['numDeaths'])
+        if 'numDeaths' in responseJSON3['games'][i]['stats']:
+            deaths = (str) (responseJSON3['games'][i]['stats']['numDeaths'])
         else:
             deaths = (str(0));
 
-        if 'assists' in responseJSON3['games'][j]['stats']:
-            assists = (str) (responseJSON3['games'][j]['stats']['assists'])
+        if 'assists' in responseJSON3['games'][i]['stats']:
+            assists = (str) (responseJSON3['games'][i]['stats']['assists'])
         else:
             assists = (str(0));
 
@@ -104,7 +104,7 @@ def main():
         responseJSON4 = requestChampionData(region, (str)(responseJSON3['games'][i]['championId']), APIKey)
         m, s = divmod((responseJSON3['games'][i]['stats']['timePlayed']), 60)
         h, m = divmod(m, 60)
-        
+
         print 'Game Result: ' + GameResult
         print 'Champion Played: ' + responseJSON4['name']
         print 'KDA: ' + KDA + " ; Ratio: " + Ratio
@@ -114,4 +114,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
