@@ -48,17 +48,17 @@ def main():
             execfile("APIGrabber.py")
 
     APIKey = (str) ('7ac4f906-c21a-476f-a50a-b0862026dcb8')
-    global responseJSON
-    responseJSON = requestSummonerData(region, summonerName, APIKey)
-    
-    if responseJSON is None:
+    global summonerDataJSON
+    summonerDataJSON = requestSummonerData(region, summonerName, APIKey)
+
+    if summonerDataJSON is None:
         print 'This summoner does not Exist'
         sys.exit()
         execfile("TiltChecker.py")
     else:
-        ID = (str) (responseJSON[summonerName]['id'])
-        responseJSON2 = requestCurrentMatch(region, ID, APIKey)
-        if responseJSON2 is None:
+        ID = (str) (summonerDataJSON[summonerName]['id'])
+        currentMatchJSON = requestCurrentMatch(region, ID, APIKey)
+        if currentMatchJSON is None:
             print 'This summoner is not in game'
             print "----------------------------------------------------------\n\n"
             while True:
@@ -70,41 +70,30 @@ def main():
     for i in range(0,10):
         if i is 5:
             print "\n----------------------------------------------------------\n----------------------------------------------------------\n"
-        print responseJSON2['participants'][i]["summonerName"]
-        opponentID = (str)(responseJSON2['participants'][i]["summonerId"])
+        print currentMatchJSON['participants'][i]["summonerName"]
+        opponentID = (str)(currentMatchJSON['participants'][i]["summonerId"])
 
-        responseJSON3 = requestRecentMatches(region, opponentID, APIKey)
-        
+        recentMatchJSON = requestRecentMatches(region, opponentID, APIKey)
+
         for j in range(0, 5):
-            
-            GameResult = (responseJSON3['games'][j]['stats']['win'])
-        
+
+            GameResult = (recentMatchJSON['games'][j]['stats']['win'])
+
             if GameResult:
                 GameResult = 'W'
             else:
                 GameResult = 'L'
-            responseJSON4 = requestChampionData(region, (str)(responseJSON3['games'][j]['championId']), APIKey)
-            m, s = divmod((responseJSON3['games'][j]['stats']['timePlayed']), 60)
+            championDataJSON = requestChampionData(region, (str)(recentMatchJSON['games'][j]['championId']), APIKey)
+            m, s = divmod((recentMatchJSON['games'][j]['stats']['timePlayed']), 60)
             h, m = divmod(m, 60)
 
-            if 'championsKilled' in responseJSON3['games'][j]['stats']:
-                kills = (str) (responseJSON3['games'][j]['stats']['championsKilled'])
-            else:
-                kills = (str(0));
-
-            if 'numDeaths' in responseJSON3['games'][j]['stats']:
-                deaths = (str) (responseJSON3['games'][j]['stats']['numDeaths'])
-            else:
-                deaths = (str(0));
-
-            if 'assists' in responseJSON3['games'][j]['stats']:
-                assists = (str) (responseJSON3['games'][j]['stats']['assists'])
-            else:
-                assists = (str(0));
+            kills = (str) (recentMatchJSON['games'][j]['stats']['championsKilled']) if ('championsKilled' in recentMatchJSON['games'][j]['stats']) else (str(0))
+            deaths = (str) (recentMatchJSON['games'][j]['stats']['numDeaths']) if 'numDeaths' in recentMatchJSON['games'][j]['stats'] else (str(0))
+            assists = (str) (recentMatchJSON['games'][j]['stats']['assists']) if 'assists' in recentMatchJSON['games'][j]['stats'] else (str(0))
 
             KDA = kills + "-" + deaths + "-" + assists
-        
-            print 'Game ' + str(j+1) + ": " + GameResult + '   Game Time: ' + "%d:%02d:%02d" % (h, m, s) + '   Champ: ' + responseJSON4['name'] + '   KDA: ' + KDA
+
+            print 'Game ' + str(j+1) + ": " + GameResult + '   Game Time: ' + "%d:%02d:%02d" % (h, m, s) + '   Champ: ' + championDataJSON['name'] + '   KDA: ' + KDA
 
 
         print "----------------------------------------------------------\n\n"
@@ -112,4 +101,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
